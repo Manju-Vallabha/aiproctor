@@ -89,13 +89,9 @@ def main():
 
         if st.sidebar.button('Start Exam 🚀'):
             st.session_state.start = True
-            message = (
-                "🎉 **Exam Started Successfully!** 📚\n"
-                "The system is now monitoring for suspicious activity. 🚨\n"
-                "The video feed will appear below once the exam begins."
-            )
+            message = "🎉 **Exam Started Successfully!** 📚\n" "The system is now monitoring for suspicious activity. 🚨\n" "The video feed will appear below once the exam begins."
             st.success(message)
-   
+
     # Display exam details and video stream after the exam starts
     if 'start' in st.session_state and st.session_state.start:
         col1, col2 = st.columns([1, 2])  # Create two columns, second column wider
@@ -110,16 +106,17 @@ def main():
             st.write("## Video Stream 🎥")
             FRAME_WINDOW = st.image([])
 
+            # Open live camera feed
             cap = cv2.VideoCapture(0)
+
             if not cap.isOpened():
-                st.error("Failed to open video capture. Please check your camera.")
-                return
+                st.error("Failed to open camera. Please check your camera settings.")
+                st.stop()
 
             ret, frame1 = cap.read()
             if not ret:
-                st.error("Failed to read from the video capture.")
-                cap.release()
-                return
+                st.error("Failed to capture frame from camera.")
+                st.stop()
 
             frame1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2RGB)
 
@@ -130,7 +127,6 @@ def main():
             while True:
                 ret, frame2 = cap.read()
                 if not ret:
-                    st.error("Failed to read from the video capture.")
                     break
 
                 frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2RGB)
@@ -144,10 +140,8 @@ def main():
                 else:
                     if no_motion_start_time is None:
                         no_motion_start_time = time.time()
-                    elif time.time() - no_motion_start_time > 5 and not warning_displayed:
-                        with col1:
-                            st.markdown("<br><br>", unsafe_allow_html=True)
-                            st.warning("🚨 The person is copying! Stopping the video. 🚫")
+                    elif time.time() - no_motion_start_time > 60 and not warning_displayed:
+                        st.warning("🚨 The person is copying! Stopping the video. 🚫")
                         warning_displayed = True
 
                         # Save snapshot
@@ -168,12 +162,8 @@ def main():
                 frame1 = frame2.copy()
 
             cap.release()
-
     else:
-        message = (
-            "Welcome to the AI Proctored Exam System! 🚀\n"
-            "To start the exam, please enter your details on the left sidebar and click the button below."
-        )
+        message = "Welcome to the AI Proctored Exam System! 🚀\n" "To start the exam, please enter your details on the left sidebar and click the button below."
         st.info(message)
 
 if __name__ == '__main__':
