@@ -12,9 +12,9 @@ st.set_page_config(page_title="AI Proctored Exam", page_icon="👁️", layout="
 
 # Function to send email notification
 def send_email_notification(snapshot_path, student_name, exam_name, exam_date):
-    email_user = '99210041261@klu.ac.in'
-    email_password = 'vjub ivne grnh gwfs'
-    email_send = 'pmanjuvallabha@gmail.com'
+    email_user = ''
+    email_password = ''
+    email_send = ''
 
     subject = f'⚠️ Suspicious Activity Detected during {exam_name}'
 
@@ -24,9 +24,9 @@ def send_email_notification(snapshot_path, student_name, exam_name, exam_date):
     msg['Subject'] = subject
 
     body = (
-        f'📚 **Student Name:** {student_name}\n'
-        f'📝 **Exam Name:** {exam_name}\n'
-        f'📅 **Exam Date:** {exam_date}\n\n'
+        f'📚 Student Name: {student_name}\n'
+        f'📝 Exam Name: {exam_name}\n'
+        f'📅 Exam Date: {exam_date}\n\n'
         '🚨 No motion detected for over 1 minute. Please review the attached snapshot.'
     )
     msg.attach(MIMEText(body, 'plain'))
@@ -140,8 +140,9 @@ def main():
                 else:
                     if no_motion_start_time is None:
                         no_motion_start_time = time.time()
-                    elif time.time() - no_motion_start_time > 60 and not warning_displayed:
-                        st.warning("🚨 The person is copying! Stopping the video. 🚫")
+                    elif time.time() - no_motion_start_time > 5 and not warning_displayed:
+                        with col1:
+                            st.warning("🚨 The person is copying! Stopping the video. 🚫")
                         warning_displayed = True
 
                         # Save snapshot
